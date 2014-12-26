@@ -8,12 +8,12 @@ public class Script {
 
     private String data;
 
-    private groovy.lang.Script groovyScript;
+//    private groovy.lang.Script groovyScript;
 
     public Script(Script script) {
         this.id = script.getId();
         this.data = script.getData();
-        this.groovyScript = script.getGroovyScript();
+//        this.groovyScript = script.getGroovyScript();
     }
 
     public Script(String id, String data) {
@@ -26,10 +26,10 @@ public class Script {
         this.id = id;
     }
 
-    public Script(Script script, groovy.lang.Script groovyScript) {
-        this(script);
-        this.groovyScript = groovyScript;
-    }
+//    public Script(Script script, groovy.lang.Script groovyScript) {
+//        this(script);
+//        this.groovyScript = groovyScript;
+//    }
 
     public String getId() {
         return id;
@@ -39,7 +39,7 @@ public class Script {
         return data;
     }
 
-    public groovy.lang.Script getGroovyScript() {
-        return groovyScript;
-    }
+//    public groovy.lang.Script getGroovyScript() {
+//        return groovyScript;
+//    }
 }

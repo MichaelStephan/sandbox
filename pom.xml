@@ -10,7 +10,6 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
         <jettyVersion>9.2.6.v20141205</jettyVersion>
         <jerseyVersion>2.14</jerseyVersion>
     </properties>
@@ -48,9 +47,9 @@
             <version>${jerseyVersion}</version>
         </dependency>
         <dependency>
-            <groupId>org.kohsuke</groupId>
-            <artifactId>groovy-sandbox</artifactId>
-            <version>1.6</version>
+            <groupId>rhino</groupId>
+            <artifactId>js</artifactId>
+            <version>1.7R2</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
