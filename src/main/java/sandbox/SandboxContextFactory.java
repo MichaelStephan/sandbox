@@ -43,7 +43,6 @@ public class SandboxContextFactory extends ContextFactory {
         context.setInstructionObserverThreshold(OPS_QUANTUM);
         context.setWrapFactory(new SandboxWrapFactory());
         context.setClassShutter(new SandboxClassShutter());
-        context.setInstructionObserverThreshold(OPS_QUANTUM);
         return context;
     }
 

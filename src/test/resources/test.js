@@ -6,4 +6,11 @@
 
 //java.lang.Class.forName('java.lang.String').newInstance()
 
-println(someHeavyProcessing())
+println(someHeavyProcessing());
+
+var ret = {
+    test1: "abc"
+};
+ret;
+
+//["abc", "def"];
