@@ -1,4 +1,4 @@
-package service.security;
+package server.security;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -9,10 +9,10 @@ import java.util.Set;
 /**
  * Created by i303874 on 12/25/14.
  */
-public final class ScriptPolicy extends Policy {
+public final class JVMSecurityPolicy extends java.security.Policy {
     private final Set<URL> locations;
 
-    public ScriptPolicy() {
+    public JVMSecurityPolicy() {
         try {
             locations = new HashSet<URL>();
             locations.add(new URL("file", "", "/untrusted"));

@@ -2,10 +2,10 @@ package service;
 
 import com.google.common.util.concurrent.*;
 import common.domain.PageableParameter;
+import script.ScriptException;
+import script.rhino.RhinoScriptRunner;
 import service.domain.Script;
 
-import java.security.*;
-import java.security.cert.Certificate;
 import java.util.*;
 import java.util.concurrent.Executors;
 
@@ -19,25 +19,16 @@ public class ScriptService {
 
     private TreeMap<String, Script> scripts = new TreeMap<>();
 
-//    private final GroovyShell scriptShell;
+    private final RhinoScriptRunner scriptRunner;
 
-    private AccessControlContext scriptContext;
-
-    public ScriptService() {
-//        scriptShell = new GroovyShell(new CompilerConfiguration().addCompilationCustomizers(new CompiletimeSecurity()));
-        Permissions perms = new Permissions();
-        ProtectionDomain[] domains = new ProtectionDomain[]{new ProtectionDomain(new CodeSource(null, (Certificate[]) null), perms)};
-        scriptContext = new AccessControlContext(domains);
+    public ScriptService() throws ScriptException {
+        scriptRunner = new RhinoScriptRunner();
     }
 
     public ListenableFuture<Object> runScript(String id) {
         return Futures.transform(getScript(id), (AsyncFunction<Script, Object>) (Script script) ->
                 executor.submit(() -> {
-                            return AccessController.doPrivileged(new PrivilegedAction() {
-                                public Object run() {
-                                    return null; //return script.getGroovyScript().run();
-                                }
-                            }, scriptContext);
+                            return scriptRunner.run(script);
                         }
                 ));
     }
@@ -81,15 +72,8 @@ public class ScriptService {
                 newScript = new Script(script, UUID.randomUUID().toString());
             }
 
-//            scripts.put(newScript.getId(), new Script(newScript, compileScript(newScript)));
+            scripts.put(newScript.getId(), newScript);
             return newScript;
         });
     }
-
-//    private groovy.lang.Script compileScript(Script script) {
-//        Binding binding = new Binding();
-//        groovy.lang.Script groovyScript = scriptShell.parse(new GroovyCodeSource(script.getData(), "untrusted", "/untrusted"));
-//        groovyScript.setBinding(binding);
-//        return groovyScript;
-//    }
 }

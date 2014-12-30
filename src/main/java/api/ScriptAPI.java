@@ -35,8 +35,8 @@ public class ScriptAPI implements ExceptionMapper<Exception> {
     public void runScripts(@Suspended final AsyncResponse asyncResponse, @PathParam("id") String id) {
         Futures.addCallback(scriptService.runScript(id), new FutureCallback<Object>() {
             @Override
-            public void onSuccess(Object o) {
-                asyncResponse.resume(Response.ok(scriptService.runScript(id)).build());
+            public void onSuccess(Object result) {
+                asyncResponse.resume(Response.ok(result).build());
             }
 
             @Override
@@ -86,7 +86,7 @@ public class ScriptAPI implements ExceptionMapper<Exception> {
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
     public void newScript(@Suspended final AsyncResponse asyncResponse, @Context UriInfo uriInfo, Script script) {
-        Futures.addCallback(scriptService.newScript(script.asInternalScript()), new FutureCallback<service.domain.Script>() {
+        Futures.addCallback(scriptService.newScript(script), new FutureCallback<service.domain.Script>() {
             @Override
             public void onSuccess(service.domain.Script script) {
                 asyncResponse.resume(Response.ok().contentLocation(uriInfo.getAbsolutePathBuilder().path(script.getId()).build()).entity(new Script(script)).build());

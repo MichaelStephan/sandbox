@@ -1,4 +1,4 @@
-package sandbox;
+package script.rhino;
 
 /**
  * Created by i303874 on 12/26/14.
@@ -10,9 +10,9 @@ import org.mozilla.javascript.Scriptable;
 /**
  * A sandboxed {@link NativeJavaObject} that prevents using reflection to escape a sandbox.
  */
-public class SandboxNativeJavaObject extends NativeJavaObject {
+public class RhinoNativeJavaObject extends NativeJavaObject {
 
-    public SandboxNativeJavaObject(Scriptable scope, Object javaObject, Class<?> staticType) {
+    public RhinoNativeJavaObject(Scriptable scope, Object javaObject, Class<?> staticType) {
         super(scope, javaObject, staticType);
     }
 

@@ -2,12 +2,11 @@ package service;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
+import server.security.JVMSecurityInitializer;
 import service.domain.Script;
-import service.security.ScriptPolicy;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.security.Policy;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -16,8 +15,7 @@ import java.util.concurrent.TimeUnit;
 public class ScriptServiceTest {
     @Test
     public void testRunScript() throws Exception {
-        Policy.setPolicy(new ScriptPolicy());
-        System.setSecurityManager(new SecurityManager());
+        new JVMSecurityInitializer().initialize();
 
         ScriptService scriptService = new ScriptService();
 

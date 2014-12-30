@@ -1,4 +1,4 @@
-package sandbox;
+package script.rhino;
 
 /**
  * Created by i303874 on 12/26/14.
@@ -9,12 +9,12 @@ import org.mozilla.javascript.WrapFactory;
 
 /**
  * A {@link WrapFactory} that ensures {@link org.mozilla.javascript.NativeJavaObject} instances are of the
- * {@link SandboxNativeJavaObject} variety.
+ * {@link RhinoNativeJavaObject} variety.
  */
-public class SandboxWrapFactory extends WrapFactory {
+public class RhinoWrapFactory extends WrapFactory {
 
     @Override
     public Scriptable wrapAsJavaObject(Context cx, Scriptable scope, Object javaObject, Class<?> staticType) {
-        return new SandboxNativeJavaObject(scope, javaObject, staticType);
+        return new RhinoNativeJavaObject(scope, javaObject, staticType);
     }
 }

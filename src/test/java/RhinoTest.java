@@ -1,10 +1,15 @@
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.mozilla.javascript.*;
-import sandbox.SandboxContextFactory;
+import script.rhino.RhinoContextFactory;
+import server.security.JVMSecurityInitializer;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.security.CodeSource;
+import java.security.cert.Certificate;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -68,28 +73,42 @@ public class RhinoTest {
         return Context.getUndefinedValue();
     }
 
+    public static Object httpRequest(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
+        try {
+            URL myURL = new URL("http://google.com/");
+            URLConnection myURLConnection = myURL.openConnection();
+            myURLConnection.connect();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Context.getUndefinedValue();
+    }
+
     @Test
     public void Test() {
-        SandboxContextFactory contextFactory = new SandboxContextFactory(2, TimeUnit.SECONDS);
+        new JVMSecurityInitializer().initialize();
+
+        SecurityController.initGlobal(new PolicySecurityController());
+
+        RhinoContextFactory contextFactory = new RhinoContextFactory(2, TimeUnit.SECONDS);
         ContextFactory.initGlobal(contextFactory);
 
         Context context = contextFactory.makeContext();
-        context.setOptimizationLevel(-1);
         contextFactory.enterContext(context);
         try {
             ScriptableObject prototype = context.initStandardObjects();
             prototype.setParentScope(null);
-            prototype.defineFunctionProperties(new String[]{"println", "someHeavyProcessing"}, getClass(), ScriptableObject.DONTENUM);
+            prototype.defineFunctionProperties(new String[]{"println", "someHeavyProcessing", "httpRequest"}, getClass(), ScriptableObject.DONTENUM);
             scope = context.newObject(prototype);
             scope.setPrototype(prototype);
 //            context.evaluateString(scope, "while(true){ println('lala') };", null, -1, null);
 
             try {
-                Script script = context.compileString(FileUtils.readFileToString(new File("./src/test/resources/test.js")), null, -1, null);
-                NativeObject result = (NativeObject)context.executeScriptWithContinuations(script, scope);
+                Script script = context.compileString(FileUtils.readFileToString(new File("./src/test/resources/test.js")), null, -1, new CodeSource(new URL("file:/untrusted"), (Certificate[]) null));
+                NativeObject result = (NativeObject) context.executeScriptWithContinuations(script, scope);
 
                 Object[] propIds = NativeObject.getPropertyIds(result);
-                for(Object propId: propIds) {
+                for (Object propId : propIds) {
                     String key = propId.toString();
                     String value = NativeObject.getProperty(result, key).toString();
                     System.out.println(value);

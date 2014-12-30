@@ -8,6 +8,8 @@
 
 println(someHeavyProcessing());
 
+httpRequest();
+
 var ret = {
     test1: "abc"
 };

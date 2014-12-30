@@ -1,25 +1,22 @@
-package sandbox;
+package script.rhino;
 
 /**
  * Created by i303874 on 12/26/14.
  */
 
-import org.mozilla.javascript.Callable;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ContextFactory;
-import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.*;
 
 import java.util.concurrent.TimeUnit;
 
 /**
  * A sandboxed {@link ContextFactory} that prevents access to all native classes.
  */
-public class SandboxContextFactory extends ContextFactory {
+public class RhinoContextFactory extends ContextFactory {
     private static final int OPS_QUANTUM = 10000;
 
     private final long maxTimeNanos;
 
-    public SandboxContextFactory(long maxTime, TimeUnit timeUnit) {
+    public RhinoContextFactory(long maxTime, TimeUnit timeUnit) {
         maxTimeNanos = timeUnit.toNanos(maxTime);
     }
 
@@ -30,7 +27,7 @@ public class SandboxContextFactory extends ContextFactory {
     }
 
     private static class TimeLimitedContext extends Context {
-        public TimeLimitedContext(SandboxContextFactory timeLimitedContextFactory) {
+        public TimeLimitedContext(RhinoContextFactory timeLimitedContextFactory) {
             super(timeLimitedContextFactory);
         }
 
@@ -40,9 +37,12 @@ public class SandboxContextFactory extends ContextFactory {
     @Override
     public Context makeContext() {
         TimeLimitedContext context = new TimeLimitedContext(this);
+        context.setOptimizationLevel(-1);
+        context.setMaximumInterpreterStackDepth(1000);
         context.setInstructionObserverThreshold(OPS_QUANTUM);
-        context.setWrapFactory(new SandboxWrapFactory());
-        context.setClassShutter(new SandboxClassShutter());
+        context.setWrapFactory(new RhinoWrapFactory());
+        context.setClassShutter(new RhinoClassShutter());
+        context.seal(null);
         return context;
     }
 

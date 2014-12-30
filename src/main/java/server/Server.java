@@ -5,6 +5,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
+import server.security.JVMSecurityInitializer;
 import service.ScriptService;
 
 /**
@@ -53,6 +54,8 @@ public class Server {
     public static void main(String[] args) {
         devMode = isDevMode(args);
 
+        new JVMSecurityInitializer().initialize();
+
         int webServerPort = -1;
         try {
             webServerPort = getPort();
@@ -90,8 +93,12 @@ public class Server {
     }
 
     private static ResourceConfig resourceConfig() {
-        ScriptService scriptService = new ScriptService();
+        try {
+            ScriptService scriptService = new ScriptService();
 
-        return new ResourceConfig().register(new ScriptAPI(scriptService));
+            return new ResourceConfig().register(new ScriptAPI(scriptService));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
