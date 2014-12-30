@@ -1,5 +1,6 @@
 package script.rhino;
 
+import com.google.common.base.Stopwatch;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import script.ScriptException;
@@ -7,8 +8,11 @@ import service.domain.Script;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -75,5 +79,65 @@ public class RhinoScriptRunnerTest {
     @Test(expected = ScriptException.class)
     public void testRunWithLongRunningScript() throws Exception {
         new RhinoScriptRunner().run(new Script("test", "while(true);"));
+    }
+
+    @Test
+    public void testRunWithPrimeScriptedVsPrimeNativeComparison() throws Exception {
+        int maxExecutions = 500;
+        long maxPrimes = 100000;
+
+        String rawScript = "" +
+                "function getPrimes(max) {\n" +
+                "    var sieve = [], i, j, primes = [];\n" +
+                "    for (i = 2; i <= max; ++i) {\n" +
+                "        if (!sieve[i]) {\n" +
+                "            // i has not been marked -- it is prime\n" +
+                "            primes.push(i);\n" +
+                "            for (j = i << 1; j <= max; j += i) {\n" +
+                "                sieve[j] = true;\n" +
+                "            }\n" +
+                "        }\n" +
+                "    }\n" +
+                "    return primes;\n" +
+                "}\n" +
+                "\n" +
+                "getPrimes(" + maxPrimes + ");";
+
+        RhinoScriptRunner runner = new RhinoScriptRunner();
+        Script script = new Script("test", rawScript);
+
+        Stopwatch scriptStopWatch = Stopwatch.createStarted();
+        for (int i = 0; i < maxExecutions; i++) {
+            runner.run(script);
+        }
+        scriptStopWatch.stop();
+
+        Stopwatch nativeStopWatch = Stopwatch.createStarted();
+        for (int i = 0; i < maxExecutions; i++) {
+            getPrimes(maxPrimes);
+        }
+        nativeStopWatch.stop();
+
+        System.out.println("script: " + scriptStopWatch.elapsed(TimeUnit.MILLISECONDS) + " vs. native: " + nativeStopWatch.elapsed(TimeUnit.MILLISECONDS));
+
+        // script is assumed to be approx. 10 times slower than the native implementation
+        assertTrue((scriptStopWatch.elapsed(TimeUnit.MILLISECONDS) / nativeStopWatch.elapsed(TimeUnit.MILLISECONDS)) <= 10.0f);
+    }
+
+    private List<Number> getPrimes(long max) {
+        Map<Long, Object> sieve = new HashMap<>();
+        List<Number> primes = new LinkedList<>();
+        long i, j;
+
+        for (i = 2; i <= max; ++i) {
+            if (!sieve.containsKey(i)) {
+                // i has not been marked -- it is prime
+                primes.add(i);
+                for (j = i << 1; j <= max; j += i) {
+                    sieve.put(j, null);
+                }
+            }
+        }
+        return primes;
     }
 }
