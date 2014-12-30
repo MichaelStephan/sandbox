@@ -2,6 +2,7 @@ package script.rhino;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
+import script.ScriptException;
 import service.domain.Script;
 
 import java.io.File;
@@ -67,6 +68,11 @@ public class RhinoScriptRunnerTest {
     public void testRunWithInfiniteJsonResult() throws Exception {
         RhinoScriptRunner runner = new RhinoScriptRunner();
         Object result = runner.run(new Script("test", FileUtils.readFileToString(new File("./src/test/resources/script/rhino/RhinoScriptRunnerTest_testRunWithInfiniteJsonResult.js"))));
+        throw new NotImplementedException();
+    }
 
+    @Test(expected = ScriptException.class)
+    public void testRunWithLongRunningScript() throws Exception {
+        new RhinoScriptRunner().run(new Script("test", "while(true);"));
     }
 }

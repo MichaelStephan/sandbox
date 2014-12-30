@@ -26,7 +26,6 @@ public class RhinoScriptRunner {
                 System.out.print(" ");
             }
 
-            // Convert the arbitrary JavaScript value into a string form.
             String s = Context.toString(args[i]);
             System.out.print(s);
         }
