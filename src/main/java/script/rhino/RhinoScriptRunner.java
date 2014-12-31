@@ -1,7 +1,10 @@
 package script.rhino;
 
 import org.mozilla.javascript.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import script.ScriptException;
+import script.ScriptRunner;
 import service.domain.Script;
 
 import java.net.URL;
@@ -13,7 +16,9 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by i303874 on 12/28/14.
  */
-public class RhinoScriptRunner {
+public class RhinoScriptRunner implements ScriptRunner {
+    private final static Logger logger = LoggerFactory.getLogger(RhinoScriptRunner.class);
+
     private final static int MAX_SCRIPT_RUNTIME = 5;
 
     private final RhinoContextFactory contextFactory;

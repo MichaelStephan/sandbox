@@ -4,6 +4,8 @@ import api.domain.Script;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import common.domain.PageableParameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import service.ScriptService;
 
 import javax.ws.rs.*;
@@ -23,6 +25,8 @@ import java.util.stream.Collectors;
  */
 @Path("/dynamicmashup/script")
 public class ScriptAPI implements ExceptionMapper<Exception> {
+    private final static Logger logger = LoggerFactory.getLogger(ScriptAPI.class);
+
     private ScriptService scriptService;
 
     public ScriptAPI(ScriptService scriptService) {
@@ -101,7 +105,8 @@ public class ScriptAPI implements ExceptionMapper<Exception> {
 
     @Override
     public Response toResponse(Exception e) {
-        e.printStackTrace();
+        logger.error("an API call caused an exception", e);
+        
         if (e instanceof NoSuchElementException) {
             return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
         } else if (e instanceof IllegalArgumentException) {

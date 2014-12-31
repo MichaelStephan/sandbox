@@ -2,8 +2,10 @@ package service;
 
 import com.google.common.util.concurrent.*;
 import common.domain.PageableParameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import script.ScriptException;
-import script.rhino.RhinoScriptRunner;
+import script.ScriptRunner;
 import service.domain.Script;
 
 import java.util.*;
@@ -13,16 +15,18 @@ import java.util.concurrent.Executors;
  * Created by i303874 on 12/23/14.
  */
 public class ScriptService {
+    private final static Logger logger = LoggerFactory.getLogger(ScriptService.class);
+
     private final static int MAX_PAGE_SIZE = 1000;
 
     private ListeningExecutorService executor = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(10));
 
     private TreeMap<String, Script> scripts = new TreeMap<>();
 
-    private final RhinoScriptRunner scriptRunner;
+    private final ScriptRunner scriptRunner;
 
-    public ScriptService() throws ScriptException {
-        scriptRunner = new RhinoScriptRunner();
+    public ScriptService(ScriptRunner scriptRunner) throws ScriptException {
+        this.scriptRunner = scriptRunner;
     }
 
     public ListenableFuture<Object> runScript(String id) {
